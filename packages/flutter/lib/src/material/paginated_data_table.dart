@@ -281,6 +281,7 @@ class PaginatedDataTableState extends State<PaginatedDataTable> {
   late int _rowCount;
   late bool _rowCountApproximate;
   int _selectedRowCount = 0;
+  int _emptyRows = 0;
   final Map<int, DataRow?> _rows = <int, DataRow?>{};
 
   @override
@@ -367,7 +368,12 @@ class PaginatedDataTableState extends State<PaginatedDataTable> {
           row ??= _getProgressIndicatorRowFor(index);
           haveProgressIndicator = true;
         }
-      result.add(row!);
+      }
+      if(row == null) {
+        _emptyRows++;
+      } else {
+        result.add(row);
+        _emptyRows = 0;
       }
     }
     return result;
@@ -561,8 +567,7 @@ class PaginatedDataTableState extends State<PaginatedDataTable> {
               ),
               SizedBox(
                   height: widget.dataRowMaxHeight *
-                      (widget.rowsPerPage - _rowCount + _firstRowIndex)
-                          .clamp(0, widget.rowsPerPage)),
+                      _emptyRows),
               DefaultTextStyle(
                 style: footerTextStyle!,
                 child: IconTheme.merge(
